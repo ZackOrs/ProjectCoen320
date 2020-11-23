@@ -9,7 +9,10 @@
 #include <vector>
 
 int myClock = 1;
+
 using namespace std;
+string carPropertyValues[7];
+
 
 vector<string> split(string str){
 
@@ -49,10 +52,10 @@ void*  FuelConsumptionThread( void*  arg )
 	string fieldValue;
 
 	while(true){
-
 		fieldValue = GetExcelData(myClock,excelColumn);
-		cout << "CURRENT TIME:" << myClock << "...... Fuel Consumption: "<< fieldValue << endl;
-	   usleep(10000);
+		carPropertyValues[0] = fieldValue;
+//		cout << "CURRENT TIME:" << myClock << "...... Fuel Consumption: "<< carPropertyValues[0] << endl;
+		usleep(10000);
 	}
 
    return( 0 );
@@ -64,7 +67,8 @@ void*  RPMThread( void*  arg )
 	string fieldValue;
 	while(true){
 		fieldValue = GetExcelData(myClock,excelColumn);
-		cout << "CURRENT TIME:" << myClock << "...... RPM: "<< fieldValue << endl;
+		carPropertyValues[1] = fieldValue;
+		//cout << "CURRENT TIME:" << myClock << "...... RPM: "<< carPropertyValues[1] << endl;
 		usleep(500000);
 	}
 
@@ -77,7 +81,8 @@ void*  CoolantTempThread( void*  arg )
 	string fieldValue;
 	while(true){
 		fieldValue = GetExcelData(myClock,excelColumn);
-		cout << "CURRENT TIME:" << myClock << "...... Coolant Temp: "<< fieldValue << endl;
+		carPropertyValues[2] = fieldValue;
+		//cout << "CURRENT TIME:" << myClock << "...... Coolant Temp: "<< carPropertyValues[2] << endl;
 		   usleep(2000000);
 	}
 
@@ -90,7 +95,8 @@ void*  GearThread( void*  arg )
 	string fieldValue;
 	while(true){
 		fieldValue = GetExcelData(myClock,excelColumn);
-		cout << "CURRENT TIME:" << myClock << "...... Current Gear: "<< fieldValue << endl;
+		carPropertyValues[3] = fieldValue;
+		//cout << "CURRENT TIME:" << myClock << "...... Current Gear: "<< carPropertyValues[3]  << endl;
 		   usleep(100000);
 	}
 
@@ -103,7 +109,8 @@ void*  TransmissionOilTempThread( void*  arg )
 	string fieldValue;
 	while(true){
 		fieldValue = GetExcelData(myClock,excelColumn);
-		cout << "CURRENT TIME:" << myClock << "...... Transmission Oil Temp: "<< fieldValue << endl;
+		carPropertyValues[4] = fieldValue;
+		//cout << "CURRENT TIME:" << myClock << "...... Transmission Oil Temp: "<< carPropertyValues[4] << endl;
 		   usleep(5000000);
 	}
 
@@ -116,7 +123,8 @@ void*  SpeedThread( void*  arg )
 	string fieldValue;
 	while(true){
 		fieldValue = GetExcelData(myClock,excelColumn);
-		cout << "CURRENT TIME:" << myClock << "...... Current Speed: "<< fieldValue << endl;
+		carPropertyValues[5] = fieldValue;
+		//cout << "CURRENT TIME:" << myClock << "...... Current Speed: "<< carPropertyValues[5] << endl;
 		   usleep(100000);
 	}
 
@@ -129,7 +137,8 @@ void*  AccelerationThread( void*  arg )
 	string fieldValue;
 	while(true){
 		fieldValue = GetExcelData(myClock,excelColumn);
-		cout << "CURRENT TIME:" << myClock << "...... Acceleration: "<< fieldValue << endl;
+		carPropertyValues[6] = fieldValue;
+		//cout << "CURRENT TIME:" << myClock << "...... Acceleration: "<< carPropertyValues[6] << endl;
 		   usleep(150000);
 	}
 
@@ -142,12 +151,36 @@ void*  BreakSwitchThread( void*  arg )
 	string fieldValue;
 	while(true){
 		fieldValue = GetExcelData(myClock,excelColumn);
-		cout << "CURRENT TIME:" << myClock << "...... Break Switch: "<< fieldValue << endl;
+		carPropertyValues[7] = fieldValue;
+		//cout << "CURRENT TIME:" << myClock << "...... Break Switch: "<< carPropertyValues[7] << endl;
 		   usleep(100000);
 	}
 
    return( 0 );
 }
+
+
+void* DisplayThread(void* arg){
+
+	string carProperties[8] = {"Fuel Consumption: ", "RPM: ", "Coolant Temp: ", "Gear: ",
+			"Transmission Oil Temp: ", "Speed: ", "Acceleration: ", "Break Switch: "};
+
+	while(true){
+
+		cout <<"Reading out values" << endl;
+		for(int i = 0 ; i < 8 ; i++){
+			cout<<"CURRENT TIME: " << myClock << "......" << carProperties[i]<<
+			carPropertyValues[i] << endl;
+		}
+		cout <<endl;
+		usleep(3000000);
+	}
+
+
+
+
+}
+
 
 int main( void )
 {
@@ -160,13 +193,15 @@ int main( void )
       &attr, PTHREAD_CREATE_DETACHED );
 
    pthread_t joinThread;
-   pthread_create( &joinThread, &attr, &RPMThread, NULL );
+   pthread_create( NULL, &attr, &FuelConsumptionThread, NULL );
+   pthread_create( NULL, &attr, &RPMThread, NULL );
    pthread_create( NULL, &attr, &CoolantTempThread, NULL );
    pthread_create( NULL, &attr, &GearThread, NULL );
    pthread_create( NULL, &attr, &TransmissionOilTempThread, NULL );
    pthread_create( NULL, &attr, &SpeedThread, NULL );
    pthread_create( NULL, &attr, &AccelerationThread, NULL );
    pthread_create( NULL, &attr, &BreakSwitchThread, NULL );
+   pthread_create( NULL, &attr, &DisplayThread, NULL );
 
    printf( "Clock Starting \n");
    /* Allow threads to run. */
