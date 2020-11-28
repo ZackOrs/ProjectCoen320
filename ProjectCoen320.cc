@@ -246,7 +246,6 @@ void* ConsumerThread(void* arg){
 			carPropertyValues[i] << endl;
 		}
 		cout <<endl;
-
         pthread_cond_signal (&condvar);//Allow threads waiting on the condition to start
         pthread_mutex_unlock (&mutex);//unlock mutex
         data_ready = true;//unblock threads
