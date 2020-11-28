@@ -11,12 +11,11 @@
 int myClock = 1;
 using namespace std;
 
-bool data_ready = false;
+bool data_ready = true;
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t  condvar = PTHREAD_COND_INITIALIZER;
 
 string carPropertyValues[7];
-
 
 vector<string> split(string str){
 
@@ -34,7 +33,7 @@ vector<string> split(string str){
 string GetExcelData(int row, int column){
 	ifstream csvFile("/root/DrivingData.csv");
 	string lineText;
-	string cellData = "NOT GOOD";
+	string cellData;
 	if(csvFile){
 
 		while(getline(csvFile,lineText) && (row > 0)){
@@ -63,9 +62,9 @@ void*  FuelConsumptionThread( void*  arg )
 		}
 		fieldValue = GetExcelData(myClock,excelColumn);
 		carPropertyValues[arrayIndex] = fieldValue; //Producer thread will print this value
-		data_ready = false;
 		pthread_cond_signal (&condvar);
 		pthread_mutex_unlock (&mutex);
+		data_ready = true;
 		usleep(10000);
 	}
 
@@ -82,12 +81,12 @@ void*  RPMThread( void*  arg )
 		while(!data_ready){
 			pthread_cond_wait (&condvar, &mutex);
 		}
-		fieldValue = GetExcelData(myClock,excelColumn);
-		carPropertyValues[arrayIndex] = fieldValue;
 		data_ready = false;
+		fieldValue = GetExcelData(myClock,excelColumn);
+		carPropertyValues[arrayIndex] = fieldValue; //Producer thread will print this value
 		pthread_cond_signal (&condvar);
 		pthread_mutex_unlock (&mutex);
-		//cout << "CURRENT TIME:" << myClock << "...... RPM: "<< carPropertyValues[1] << endl;
+		data_ready = true;
 		usleep(500000);
 	}
 
@@ -104,13 +103,13 @@ void*  CoolantTempThread( void*  arg )
 		while(!data_ready){
 			pthread_cond_wait (&condvar, &mutex);
 		}
-		fieldValue = GetExcelData(myClock,excelColumn);
-		carPropertyValues[arrayIndex] = fieldValue;
 		data_ready = false;
+		fieldValue = GetExcelData(myClock,excelColumn);
+		carPropertyValues[arrayIndex] = fieldValue; //Producer thread will print this value
 		pthread_cond_signal (&condvar);
 		pthread_mutex_unlock (&mutex);
-		//cout << "CURRENT TIME:" << myClock << "...... Coolant Temp: "<< carPropertyValues[2] << endl;
-		   usleep(2000000);
+		data_ready = true;
+		usleep(2000000);
 	}
 
    return( 0 );
@@ -126,13 +125,13 @@ void*  GearThread( void*  arg )
 		while(!data_ready){
 			pthread_cond_wait (&condvar, &mutex);
 		}
-		fieldValue = GetExcelData(myClock,excelColumn);
-		carPropertyValues[arrayIndex] = fieldValue;
 		data_ready = false;
+		fieldValue = GetExcelData(myClock,excelColumn);
+		carPropertyValues[arrayIndex] = fieldValue; //Producer thread will print this value
 		pthread_cond_signal (&condvar);
 		pthread_mutex_unlock (&mutex);
-		//cout << "CURRENT TIME:" << myClock << "...... Current Gear: "<< carPropertyValues[3]  << endl;
-		   usleep(100000);
+		data_ready = true;
+		usleep(100000);
 	}
 
    return( 0 );
@@ -148,13 +147,13 @@ void*  TransmissionOilTempThread( void*  arg )
 		while(!data_ready){
 			pthread_cond_wait (&condvar, &mutex);
 		}
-		fieldValue = GetExcelData(myClock,excelColumn);
-		carPropertyValues[arrayIndex] = fieldValue;
 		data_ready = false;
+		fieldValue = GetExcelData(myClock,excelColumn);
+		carPropertyValues[arrayIndex] = fieldValue; //Producer thread will print this value
 		pthread_cond_signal (&condvar);
 		pthread_mutex_unlock (&mutex);
-		//cout << "CURRENT TIME:" << myClock << "...... Transmission Oil Temp: "<< carPropertyValues[4] << endl;
-		   usleep(5000000);
+		data_ready = true;
+		usleep(5000000);
 	}
 
    return( 0 );
@@ -170,13 +169,13 @@ void*  SpeedThread( void*  arg )
 		while(!data_ready){
 			pthread_cond_wait (&condvar, &mutex);
 		}
-		fieldValue = GetExcelData(myClock,excelColumn);
-		carPropertyValues[arrayIndex] = fieldValue;
 		data_ready = false;
+		fieldValue = GetExcelData(myClock,excelColumn);
+		carPropertyValues[arrayIndex] = fieldValue; //Producer thread will print this value
 		pthread_cond_signal (&condvar);
 		pthread_mutex_unlock (&mutex);
-		//cout << "CURRENT TIME:" << myClock << "...... Current Speed: "<< carPropertyValues[5] << endl;
-		   usleep(100000);
+		data_ready = true;
+		usleep(100000);
 	}
 
    return( 0 );
@@ -192,13 +191,13 @@ void*  AccelerationThread( void*  arg )
 		while(!data_ready){
 			pthread_cond_wait (&condvar, &mutex);
 		}
-		fieldValue = GetExcelData(myClock,excelColumn);
-		carPropertyValues[arrayIndex] = fieldValue;
 		data_ready = false;
+		fieldValue = GetExcelData(myClock,excelColumn);
+		carPropertyValues[arrayIndex] = fieldValue; //Producer thread will print this value
 		pthread_cond_signal (&condvar);
 		pthread_mutex_unlock (&mutex);
-		//cout << "CURRENT TIME:" << myClock << "...... Acceleration: "<< carPropertyValues[6] << endl;
-		   usleep(150000);
+		data_ready = true;
+		usleep(150000);
 	}
 
    return( 0 );
@@ -214,13 +213,13 @@ void*  BreakSwitchThread( void*  arg )
 		while(!data_ready){
 			pthread_cond_wait (&condvar, &mutex);
 		}
-		fieldValue = GetExcelData(myClock,excelColumn);
-		carPropertyValues[arrayIndex] = fieldValue;
 		data_ready = false;
+		fieldValue = GetExcelData(myClock,excelColumn);
+		carPropertyValues[arrayIndex] = fieldValue; //Producer thread will print this value
 		pthread_cond_signal (&condvar);
 		pthread_mutex_unlock (&mutex);
-		//cout << "CURRENT TIME:" << myClock << "...... Break Switch: "<< carPropertyValues[7] << endl;
-		   usleep(100000);
+		data_ready = true;
+		usleep(100000);
 	}
 
    return( 0 );
@@ -235,19 +234,20 @@ void* ConsumerThread(void* arg){
 	while(true){
 
 		pthread_mutex_lock (&mutex);
-		while(data_ready){
+		while(!data_ready){
 			pthread_cond_wait (&condvar, &mutex);
 		}
+		data_ready = false;
 		cout <<"Reading out values" << endl;
 		for(int i = 0 ; i < 8 ; i++){
 			cout<<"CURRENT TIME: " << myClock << "......" << carProperties[i]<<
 			carPropertyValues[i] << endl;
 		}
 		cout <<endl;
-        data_ready = true;
         pthread_cond_signal (&condvar);
         pthread_mutex_unlock (&mutex);
-		usleep(300);
+        data_ready = true;
+		usleep(8000000); //Enter the period for the consumer thread
 	}
 
 }
@@ -257,8 +257,8 @@ int main( void )
 {
 
 
+	//Initializers
    pthread_attr_t attr;
-
    pthread_attr_init( &attr );
    pthread_attr_setdetachstate(
       &attr, PTHREAD_CREATE_DETACHED );
@@ -278,9 +278,9 @@ int main( void )
    pthread_create( NULL, &attr, &ConsumerThread, NULL );
 
    printf( "Clock Starting \n");
-   /* Allow threads to run. */
+
+   //Increase system time by 1 second
    while(true){
-//	   printf( "Clock time: %d \n", myClock );
 	   usleep(1000000);
 	   myClock++;
    }
