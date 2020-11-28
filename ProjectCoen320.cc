@@ -17,6 +17,8 @@ pthread_cond_t  condvar = PTHREAD_COND_INITIALIZER;
 
 string carPropertyValues[7];
 
+
+//Splits a string at every comma and place the word before the comma at the end of an array
 vector<string> split(string str){
 
 	vector<string> array;
@@ -31,18 +33,19 @@ vector<string> split(string str){
 
 
 string GetExcelData(int row, int column){
-	ifstream csvFile("/root/DrivingData.csv");
+	ifstream csvFile("/root/DrivingData.csv"); //open the drivingData file
 	string lineText;
 	string cellData;
 	if(csvFile){
 
+		//go to the desired Row
 		while(getline(csvFile,lineText) && (row > 0)){
 			row--;
 		}
-
+		//When row is found, combine all values into a vector<string> & split at every comma
 		if(row == 0){
 			vector<string> array = split(lineText);
-			cellData = array[column];
+			cellData = array[column]; //return the element at the desired column
 		}
 	}
 
@@ -51,9 +54,9 @@ string GetExcelData(int row, int column){
 
 void*  FuelConsumptionThread( void*  arg )
 {
-	int excelColumn = 0;
+	int excelColumn = 0;//specify which column in the excel file
 	string fieldValue;
-	int arrayIndex = 0;
+	int arrayIndex = 0;//specify the element in the carPropertyValues
 
 	while(true){
 		pthread_mutex_lock(&mutex); //Lock mutex
@@ -232,7 +235,7 @@ void* ConsumerThread(void* arg){
 	string carProperties[8] = {"Fuel Consumption: ", "RPM: ", "Coolant Temp: ", "Gear: ",
 			"Transmission Oil Temp: ", "Speed: ", "Acceleration: ", "Break Switch: "};
 
-	int consumerPeriod = 5 * 1000000; // set the period in seconds
+	int consumerPeriod = 2000 * 1000; // set the period in milliseconds
 	while(true){
 		pthread_mutex_lock (&mutex); //Lock mutex
 		while(!data_ready){ //Waits for CPU to be available
